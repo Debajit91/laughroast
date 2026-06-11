@@ -7,26 +7,43 @@ export default function App() {
   const [roasts, setRoasts] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [displayText, setDisplayText] = useState("");
+  const [thinkingText, setThinkingText] = useState("");
+
+  const sleep = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms));
+
 
   const generateRoast = async () => {
-    try {
-      setLoading(true);
+  setLoading(true);
 
-      const res = await axios.post("http://localhost:5000/api/roast", {
-        name,
-      });
+  const thinkingInterval = startThinkingAnimation();
 
-      const roastList = res.data.roast;
+  try {
+    const res = await axios.post(
+      "http://localhost:5000/api/roast",
+      { name }
+    );
 
-      setRoasts(roastList);
+    const roastText = res.data.roast.join("\n\n");
 
-      typeRoast(roastList.join("\n\n"));
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    setRoasts(res.data.roast);
+
+    // ⛔ delay before typing starts
+    await sleep(1500);
+
+    clearInterval(thinkingInterval);
+    setThinkingText("💀 Finalizing roast...");
+    await sleep(800);
+
+    // ✨ now start typing AFTER thinking ends
+    typeRoast(roastText);
+
+  } catch (err) {
+    console.log(err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const shareToWhatsApp = () => {
     if (roasts.length === 0) return;
@@ -57,6 +74,30 @@ export default function App() {
     }, 30);
   };
 
+  const startThinkingAnimation = () => {
+    const texts = [
+      "🤖 AI is thinking...",
+      "🤖 Scanning target...",
+      "🧠 Analyzing weaknesses...",
+      "🧠 Finding best roast...",
+      "🔥 Loading emotional damage...",
+      "💀 Roast locked and loaded...",
+      "😂 Launching attack..."
+    ];
+
+    setThinkingText(texts[0]);
+
+    let index = 0;
+
+    const interval = setInterval(() => {
+      setThinkingText(texts[index]);
+
+      index = (index + 1) % texts.length;
+    }, 1000);
+
+    return interval;
+  };
+
   return (
     <div className="app">
       <div className="card-box">
@@ -73,7 +114,14 @@ export default function App() {
           <button onClick={generateRoast} disabled={loading}>
             {loading ? "Roasting 🔥..." : "Roast Him 😂"}
           </button>
+
+           
         </div>
+        {loading && (
+          <div className="thinking-box">
+            {thinkingText}
+          </div>
+        )}
 
         <div className="roast-card typing-card">
           {displayText}
@@ -86,17 +134,19 @@ export default function App() {
 
         )}
         {roasts.length > 0 && (
-        <button
-          className="share-btn"
-          onClick={() => navigator.clipboard.writeText(roasts.join("\n"))}
-        >
-          📋 Copy Roast
-        </button>
+          <button
+            className="share-btn"
+            onClick={() => navigator.clipboard.writeText(roasts.join("\n"))}
+          >
+            📋 Copy Roast
+          </button>
         )}
+
+       
       </div>
 
 
     </div>
-    
+
   );
 }

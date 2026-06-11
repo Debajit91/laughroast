@@ -102,11 +102,17 @@ button:disabled {
   animation: blink 0.8s infinite;
 }
 
-
+.thinking-box {
+  margin-top: 15px;
+  font-size: 15px;
+  font-weight: 600;
+  opacity: 0.9;
+  animation: pulse 1.2s infinite;
+}
 
 /* Animation */
-@keyframes blink {
+@keyframes pulse {
   50% {
-    opacity: 0;
+    opacity: 0.4;
   }
 }
