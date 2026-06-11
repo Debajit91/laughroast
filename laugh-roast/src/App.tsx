@@ -6,6 +6,7 @@ export default function App() {
   const [name, setName] = useState<string>("");
   const [roasts, setRoasts] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [displayText, setDisplayText] = useState("");
 
   const generateRoast = async () => {
     try {
@@ -15,7 +16,11 @@ export default function App() {
         name,
       });
 
-      setRoasts(res.data.roast);
+      const roastList = res.data.roast;
+
+      setRoasts(roastList);
+
+      typeRoast(roastList.join("\n\n"));
     } catch (err) {
       console.log(err);
     } finally {
@@ -36,6 +41,22 @@ export default function App() {
     window.open(url, "_blank");
   };
 
+  const typeRoast = (text: string) => {
+    let index = 0;
+
+    setDisplayText("");
+
+    const interval = setInterval(() => {
+      setDisplayText(text.slice(0, index + 1));
+
+      index++;
+
+      if (index >= text.length) {
+        clearInterval(interval);
+      }
+    }, 30);
+  };
+
   return (
     <div className="app">
       <div className="card-box">
@@ -54,22 +75,28 @@ export default function App() {
           </button>
         </div>
 
-        <div className="roast-list">
-          {roasts.map((r, i) => (
-            <div key={i} className="roast-card">
-              {r}
-            </div>
-          ))}
-
-          {roasts.length > 0 && (
-            <button className="share-btn" onClick={shareToWhatsApp}>
-              📱 Share to WhatsApp
-            </button>
-          )}
+        <div className="roast-card typing-card">
+          {displayText}
         </div>
-        
-        
+
+        {roasts.length > 0 && (
+          <button className="share-btn" onClick={shareToWhatsApp}>
+            📱 Share to WhatsApp
+          </button>
+
+        )}
+        {roasts.length > 0 && (
+        <button
+          className="share-btn"
+          onClick={() => navigator.clipboard.writeText(roasts.join("\n"))}
+        >
+          📋 Copy Roast
+        </button>
+        )}
       </div>
+
+
     </div>
+    
   );
 }

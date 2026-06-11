@@ -91,14 +91,22 @@ button:disabled {
   transform: scale(1.03);
 }
 
+.typing-card {
+  white-space: pre-line;
+  min-height: 120px;
+  text-align: left;
+}
+
+.typing-card::after {
+  content: "|";
+  animation: blink 0.8s infinite;
+}
+
+
+
 /* Animation */
-@keyframes fadeIn {
-  from {
+@keyframes blink {
+  50% {
     opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
