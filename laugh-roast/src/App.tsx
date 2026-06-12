@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { toPng } from "html-to-image";
 import axios from "axios";
 import "./style.css";
 
 export default function App() {
   const [name, setName] = useState<string>("");
+  const cardRef = useRef<HTMLDivElement>(null);
   const [roasts, setRoasts] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [displayText, setDisplayText] = useState("");
@@ -14,36 +16,36 @@ export default function App() {
 
 
   const generateRoast = async () => {
-  setLoading(true);
+    setLoading(true);
 
-  const thinkingInterval = startThinkingAnimation();
+    const thinkingInterval = startThinkingAnimation();
 
-  try {
-    const res = await axios.post(
-      "http://localhost:5000/api/roast",
-      { name }
-    );
+    try {
+      const res = await axios.post(
+        "https://laugh-roast-backend.vercel.app/api/roast",
+        { name }
+      );
 
-    const roastText = res.data.roast.join("\n\n");
+      const roastText = res.data.roast.join("\n\n");
 
-    setRoasts(res.data.roast);
+      setRoasts(res.data.roast);
 
-    // ⛔ delay before typing starts
-    await sleep(1500);
+      // ⛔ delay before typing starts
+      await sleep(1500);
 
-    clearInterval(thinkingInterval);
-    setThinkingText("💀 Finalizing roast...");
-    await sleep(800);
+      clearInterval(thinkingInterval);
+      setThinkingText("💀 Finalizing roast...");
+      await sleep(800);
 
-    // ✨ now start typing AFTER thinking ends
-    typeRoast(roastText);
+      // ✨ now start typing AFTER thinking ends
+      typeRoast(roastText);
 
-  } catch (err) {
-    console.log(err);
-  } finally {
-    setLoading(false);
-  }
-};
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const shareToWhatsApp = () => {
     if (roasts.length === 0) return;
@@ -98,6 +100,23 @@ export default function App() {
     return interval;
   };
 
+  const downloadRoastCard = async () => {
+    if (!cardRef.current) return;
+
+    try {
+      const dataUrl = await toPng(cardRef.current);
+
+      const link = document.createElement("a");
+
+      link.download = "laugh-roast-card.png";
+      link.href = dataUrl;
+
+      link.click();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className="app">
       <div className="card-box">
@@ -115,7 +134,7 @@ export default function App() {
             {loading ? "Roasting 🔥..." : "Roast Him 😂"}
           </button>
 
-           
+
         </div>
         {loading && (
           <div className="thinking-box">
@@ -123,8 +142,17 @@ export default function App() {
           </div>
         )}
 
-        <div className="roast-card typing-card">
-          {displayText}
+        <div
+          ref={cardRef}
+          className="roast-card typing-card text"
+        >
+          <h3>🔥 LaughRoast</h3>
+
+          <div>{displayText}</div>
+
+          <small>
+            laughroast.vercel.app
+          </small>
         </div>
 
         {roasts.length > 0 && (
@@ -142,11 +170,20 @@ export default function App() {
           </button>
         )}
 
-       
+        {roasts.length > 0 && (
+          <button
+            className="share-btn"
+            onClick={downloadRoastCard}
+          >
+            🖼️ Share Card
+          </button>
+        )}
+
+
       </div>
 
 
-    </div>
+    </div >
 
   );
 }
