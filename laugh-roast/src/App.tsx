@@ -38,7 +38,7 @@ export default function App() {
 
       setRoasts(res.data.roast);
 
-      
+
 
       // ⛔ delay before typing starts
       await sleep(1500);
@@ -210,8 +210,19 @@ export default function App() {
 
       </div>
 
+      <footer className="app-footer">
+        <p>Developed by <strong>Debajit Roy</strong></p>
+        <p>
+          <a href="mailto:debajitroy544@gmail.com">
+            📧 debajitroy544@gmail.com
+          </a> | 📱 +8801783388518
+        </p>
+      </footer>
 
     </div >
 
+
+
   );
+
 }
