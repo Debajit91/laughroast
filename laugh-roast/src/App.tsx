@@ -34,17 +34,18 @@ export default function App() {
       );
 
       const roastText = res.data.roast.join("\n");
-      setDisplayText(roastText);
+      // setDisplayText(roastText);
 
       setRoasts(res.data.roast);
 
-      setCardImage(getRandomImage());
+      
 
       // ⛔ delay before typing starts
       await sleep(1500);
 
       clearInterval(thinkingInterval);
       setThinkingText("💀 Finalizing roast...");
+      setCardImage(getRandomImage());
       await sleep(800);
 
       // ✨ now start typing AFTER thinking ends
