@@ -339,6 +339,56 @@ button:disabled {
 
 .roast-card {
   transition: all 0.4s ease-in-out;
+  /* width: 100%;
+
+  max-width: 420px;
+
+  box-sizing: border-box;
+
+  overflow-wrap: break-word;
+
+  word-break: break-word; */
+}
+
+@media (max-width: 600px) {
+
+  .card-box {
+    width: 92%;
+
+    padding: 18px;
+
+    border-radius: 18px;
+  }
+
+  .roast-card {
+
+    width: 100%;
+
+    max-width: 100%;
+
+    padding: 18px;
+
+    min-height: auto;
+
+    font-size: 15px;
+
+    line-height: 1.7;
+
+    box-sizing: border-box;
+
+    overflow-wrap: break-word;
+
+    word-break: break-word;
+  }
+
+  .input-box {
+    flex-direction: column;
+  }
+
+  button {
+    width: 100%;
+  }
+
 }
 
 .theme-switch {
