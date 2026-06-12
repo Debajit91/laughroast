@@ -142,17 +142,24 @@ export default function App() {
           </div>
         )}
 
-        <div
-          ref={cardRef}
-          className="roast-card typing-card text"
-        >
-          <h3>🔥 LaughRoast</h3>
+        <div ref={cardRef} className="roast-card">
 
-          <div>{displayText}</div>
+          <div className="roast-title">
+            🔥 LaughRoast
+          </div>
 
-          <small>
+          <div className="roast-name">
+            {name}
+          </div>
+
+          <div className="roast-text">
+            {displayText}
+          </div>
+
+          <div className="roast-footer">
             laughroast.vercel.app
-          </small>
+          </div>
+
         </div>
 
         {roasts.length > 0 && (
