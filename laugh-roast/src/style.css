@@ -1,15 +1,49 @@
 /* Background */
 .app {
-  height: 100vh;
+  min-height: 100vh;
+
   display: flex;
+
   justify-content: center;
+
   align-items: center;
-  background: linear-gradient(135deg, #0f172a, #1e293b);
-  font-family: Arial, sans-serif;
+
+  padding: 20px;
+
+  background:
+    radial-gradient(circle at top,
+      #ff6b00 0%,
+      #1b0d2a 30%,
+      #0f172a 100%);
+
+  position: relative;
+
+  overflow: hidden;
+
+  font-family:
+    Inter,
+    Arial,
+    sans-serif;
+}
+
+.app::before {
+  content: "😂 🔥 💀 🤖";
+
+  position: absolute;
+
+  top: -80px;
+
+  right: -50px;
+
+  font-size: 120px;
+
+  opacity: .05;
+
+  transform: rotate(-20deg);
 }
 
 /* Main card */
-.card-box {
+/* .card-box {
   width: 400px;
   padding: 25px;
   border-radius: 20px;
@@ -18,7 +52,7 @@
   color: white;
   text-align: center;
   box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-}
+} */
 
 /* Title */
 .card-box h1 {
@@ -38,6 +72,8 @@ input {
   border-radius: 10px;
   border: none;
   outline: none;
+  background: #ffffff10;
+  color: white;
 }
 
 /* Button */
@@ -56,6 +92,10 @@ button:hover {
   box-shadow: 0 0 15px rgba(255, 100, 0, 0.6);
 }
 
+button:active {
+  transform: scale(.97);
+}
+
 button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -67,35 +107,64 @@ button:disabled {
 }
 
 .roast-card {
-  background: linear-gradient(
-    135deg,
-    rgba(255,255,255,0.12),
-    rgba(255,255,255,0.06)
-  );
 
-  margin-top: 16px;
+  background:
+    linear-gradient(135deg,
+      rgba(255, 120, 0, .18),
+      rgba(255, 255, 255, .06));
+
+  border:
+    1px solid rgba(255, 255, 255, .12);
+
+  border-radius: 22px;
 
   padding: 24px;
 
-  border-radius: 20px;
-
-  animation: fadeIn 0.4s ease-in-out;
+  margin-top: 20px;
 
   white-space: pre-wrap;
 
-  max-width: 420px;
+  min-height: 140px;
 
-  margin-left: auto;
-  margin-right: auto;
+  line-height: 1.8;
 
-  border: 1px solid rgba(255,255,255,0.15);
+  position: relative;
 
-  box-shadow:
-    0 10px 30px rgba(0,0,0,0.25);
+  overflow: hidden;
 
-  color: white;
+  animation:
+    reveal .5s ease;
+}
 
-  text-align: left;
+.roast-card::before {
+
+  content: "🔥";
+
+  position: absolute;
+
+  top: 12px;
+
+  right: 18px;
+
+  font-size: 26px;
+
+  opacity: .35;
+}
+
+@keyframes reveal {
+
+  from {
+    opacity: 0;
+    transform:
+      translateY(15px);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translateY(0);
+  }
+
 }
 
 .share-btn {
@@ -121,7 +190,7 @@ button:disabled {
   text-align: left;
 }
 
-.text{
+.text {
   text-align: center;
 }
 
@@ -140,10 +209,37 @@ button:disabled {
 
 .card-box {
   width: 100%;
-  max-width: 420px;
-  border-radius: 20px;
-  padding: 20px;
-  background: #111;
+
+  max-width: 430px;
+
+  padding: 28px;
+
+  border-radius: 28px;
+
+  background:
+    rgba(255, 255, 255, 0.08);
+
+  backdrop-filter:
+    blur(18px);
+
+  border:
+    1px solid rgba(255, 255, 255, .12);
+
+  color: white;
+
+  text-align: center;
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, .45),
+    0 0 40px rgba(255, 120, 0, .12);
+
+  transition:
+    .3s;
+}
+
+.card-box:hover {
+  transform:
+    translateY(-2px);
 }
 
 /* Animation */
