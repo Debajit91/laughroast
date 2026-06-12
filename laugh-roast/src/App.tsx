@@ -10,6 +10,7 @@ export default function App() {
   const [loading, setLoading] = useState<boolean>(false);
   const [displayText, setDisplayText] = useState("");
   const [thinkingText, setThinkingText] = useState("");
+  const [theme, setTheme] = useState("fire");
 
   const sleep = (ms: number) =>
     new Promise((resolve) => setTimeout(resolve, ms));
@@ -134,15 +135,21 @@ export default function App() {
             {loading ? "Roasting 🔥..." : "Roast Him 😂"}
           </button>
 
-
         </div>
+
+        <div className="theme-switch">
+          <button onClick={() => setTheme("dark")}>🌑 Dark</button>
+          <button onClick={() => setTheme("fire")}>🔥 Fire</button>
+          <button onClick={() => setTheme("neon")}>⚡ Neon</button>
+        </div>
+
         {loading && (
           <div className="thinking-box">
             {thinkingText}
           </div>
         )}
 
-        <div ref={cardRef} className="roast-card">
+        <div ref={cardRef} className={`roast-card ${theme}`}>
 
           <div className="roast-title">
             🔥 LaughRoast
