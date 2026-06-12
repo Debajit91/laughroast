@@ -33,7 +33,8 @@ export default function App() {
         { name }
       );
 
-      const roastText = res.data.roast.join("\n\n");
+      const roastText = res.data.roast.join("\n");
+      setDisplayText(roastText);
 
       setRoasts(res.data.roast);
 
