@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { toPng } from "html-to-image";
 import axios from "axios";
 import "./style.css";
+import { memeImages } from "./data/memeImages";
 
 export default function App() {
   const [name, setName] = useState<string>("");
@@ -11,6 +12,11 @@ export default function App() {
   const [displayText, setDisplayText] = useState("");
   const [thinkingText, setThinkingText] = useState("");
   const [theme, setTheme] = useState("fire");
+  const [cardImage, setCardImage] = useState<string>("");
+
+  const getRandomImage = () => {
+    return memeImages[Math.floor(Math.random() * memeImages.length)];
+  };
 
   const sleep = (ms: number) =>
     new Promise((resolve) => setTimeout(resolve, ms));
@@ -30,6 +36,8 @@ export default function App() {
       const roastText = res.data.roast.join("\n\n");
 
       setRoasts(res.data.roast);
+
+      setCardImage(getRandomImage());
 
       // ⛔ delay before typing starts
       await sleep(1500);
@@ -162,6 +170,10 @@ export default function App() {
           <div className="roast-text">
             {displayText}
           </div>
+
+          {cardImage && (
+            <img src={cardImage} className="card-img" />
+          )}
 
           <div className="roast-footer">
             laughroast.vercel.app

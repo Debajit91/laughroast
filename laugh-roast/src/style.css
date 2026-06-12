@@ -346,6 +346,16 @@ button:disabled {
   justify-content: center;
 }
 
+.card-img {
+  width: 100%;
+  margin-top: 14px;
+  border-radius: 16px;
+  object-fit: cover;
+  max-height: 50%;
+
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+}
+
 /* Animation */
 @keyframes pulse {
   50% {
