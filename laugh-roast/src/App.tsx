@@ -178,7 +178,7 @@ export default function App() {
           )}
 
           <div className="roast-footer">
-            laughroast.vercel.app
+            laugh-roast.vercel.app
           </div>
 
         </div>
