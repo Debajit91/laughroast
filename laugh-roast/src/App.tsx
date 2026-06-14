@@ -50,14 +50,15 @@ export default function App() {
   const shareToWhatsApp = () => {
     if (roasts.length === 0) return;
 
-    const message =
-      `😂 LaughRoast Result 😂\n\n` +
-      roasts.join("\n\n") +
-      `\n\nTry LaughRoast yourself! 🔥`;
+     const message =
+    `😂 LaughRoast Result 😂\n\n` +
+    roasts.join("\n\n") +
+    `\n\n🔥 Roast yourself here: https://laugh-roast.vercel.app`;
 
-    const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
-    window.open(url, "_blank");
-  };
+  const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+
+  window.open(url, "_blank");
+};
 
   const downloadRoastCard = async () => {
     if (!cardRef.current) return;
@@ -120,7 +121,7 @@ export default function App() {
               {displayText}
             </div>
 
-            {cardImage && (
+            {cardImage && cardImage.length > 0 &&(
               <img
                 src={cardImage}
                 alt="Roast Meme"
