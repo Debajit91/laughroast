@@ -3,6 +3,15 @@ import { toPng } from "html-to-image";
 import axios from "axios";
 import "./style.css";
 
+// ফানি ওয়েটিং মেসেজগুলোর লিস্ট (ইচ্ছেমতো আরও যোগ করতে পারেন)
+const waitingTexts = [
+  "🤖 আপনার বন্ধুর অতীত ইতিহাস খোঁজা হচ্ছে...",
+  "🕵️ গোপন সূত্র থেকে বাঁশ গোছানো হচ্ছে...",
+  "⚙️ মিম জেনারেটরের ইঞ্জিন গরম হচ্ছে...",
+  "🔥 রোস্টিংয়ের কড়াইয়ে তেল দেওয়া হচ্ছে...",
+  "💀 ফাইনাল ট্রোলের স্ক্রিপ্ট রেডি হচ্ছে...",
+];
+
 
 export default function App() {
   const [name, setName] = useState<string>("");
@@ -15,37 +24,46 @@ export default function App() {
   const [cardImage, setCardImage] = useState("");
 
   const generateRoast = async () => {
-    if (!name.trim()) return alert("Please enter a name!");
+  if (!name.trim()) return alert("Please enter a name!");
 
-    setLoading(true);
-    setThinkingText("🤖 AI is roasting...");
+  setLoading(true);
+  setRoasts([]);
+  setDisplayText("");
+  setCardImage("");
 
-    // নতুন রোস্ট তৈরির আগে আগের স্টেট ক্লিয়ার করে নেওয়া ভালো UX দেয়
-    setRoasts([]);
-    setDisplayText("");
-    setCardImage("");
+  // ১. প্রথম মেসেজটি সাথে সাথে সেট করুন
+  let textIndex = 0;
+  setThinkingText(waitingTexts[textIndex]);
 
-    try {
-      const res = await axios.post(
-        "https://laugh-roast-backend.vercel.app/api/roast",
-        { name }
-      );
+  // ২. প্রতি ২ সেকেন্ড (২০০০ মিলিসেকেন্ড) পর পর মেসেজ চেঞ্জ করার টাইমার
+  const intervalId = setInterval(() => {
+    textIndex = (textIndex + 1) % waitingTexts.length;
+    setThinkingText(waitingTexts[textIndex]);
+  }, 2000);
 
-      if (res.data?.roast) {
-        setRoasts(res.data.roast);
-        setDisplayText(res.data.roast.join("\n\n")); // সহজে পড়ার জন্য ডাবল নিউলাইন
-      }
-      if (res.data?.image) {
-        setCardImage(res.data.image);
-      }
-    } catch (err) {
-      console.error(err);
-      setDisplayText("Server shock খেয়েছে! আবার ট্রাই করুন। 😭");
-    } finally {
-      setLoading(false);
-      setThinkingText("");
+  try {
+    const res = await axios.post(
+      "https://laugh-roast-backend.vercel.app/api/roast",
+      { name }
+    );
+
+    if (res.data?.roast) {
+      setRoasts(res.data.roast);
+      setDisplayText(res.data.roast.join("\n\n"));
     }
-  };
+    if (res.data?.image) {
+      setCardImage(res.data.image);
+    }
+  } catch (err) {
+    console.log(err);
+    setDisplayText("Server shock খেয়েছে! আবার ট্রাই করুন। 😭");
+  } finally {
+    // ৩. রিকোয়েস্ট শেষ হলে টাইমারটি অবশ্যই ক্লিয়ার (বন্ধ) করে দিতে হবে
+    clearInterval(intervalId);
+    setLoading(false);
+    setThinkingText("");
+  }
+};
 
   const shareToWhatsApp = () => {
     if (roasts.length === 0) return;
