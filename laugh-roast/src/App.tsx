@@ -12,20 +12,18 @@ export default function App() {
   const [displayText, setDisplayText] = useState("");
   const [thinkingText, setThinkingText] = useState("");
   const [theme, setTheme] = useState("fire");
-  const [cardImage, setCardImage] = useState<string>("");
-
-  const getRandomImage = () => {
-    return memeImages[Math.floor(Math.random() * memeImages.length)];
-  };
-
-  const sleep = (ms: number) =>
-    new Promise((resolve) => setTimeout(resolve, ms));
-
+  const [cardImage, setCardImage] = useState("");
 
   const generateRoast = async () => {
-    setLoading(true);
+    if (!name.trim()) return alert("Please enter a name!");
 
-    const thinkingInterval = startThinkingAnimation();
+    setLoading(true);
+    setThinkingText("🤖 AI is roasting...");
+
+    // নতুন রোস্ট তৈরির আগে আগের স্টেট ক্লিয়ার করে নেওয়া ভালো UX দেয়
+    setRoasts([]);
+    setDisplayText("");
+    setCardImage("");
 
     try {
       const res = await axios.post(
@@ -33,28 +31,18 @@ export default function App() {
         { name }
       );
 
-      const roastText = res.data.roast.join("\n");
-      // setDisplayText(roastText);
-
-      setRoasts(res.data.roast);
-
-
-
-      // ⛔ delay before typing starts
-      await sleep(1500);
-
-      clearInterval(thinkingInterval);
-      setThinkingText("💀 Finalizing roast...");
-      setCardImage(getRandomImage());
-      await sleep(800);
-
-      // ✨ now start typing AFTER thinking ends
-      typeRoast(roastText);
-
+      if (res.data?.roast) {
+        setRoasts(res.data.roast);
+        setDisplayText(res.data.roast.join("\n\n")); // সহজে পড়ার জন্য ডাবল নিউলাইন
+      }
+      const randomIndex = Math.floor(Math.random() * memeImages.length);
+      setCardImage(memeImages[randomIndex]);
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      setDisplayText("Server shock খেয়েছে! আবার ট্রাই করুন। 😭");
     } finally {
       setLoading(false);
+      setThinkingText("");
     }
   };
 
@@ -67,64 +55,26 @@ export default function App() {
       `\n\nTry LaughRoast yourself! 🔥`;
 
     const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
-
     window.open(url, "_blank");
-  };
-
-  const typeRoast = (text: string) => {
-    let index = 0;
-
-    setDisplayText("");
-
-    const interval = setInterval(() => {
-      setDisplayText(text.slice(0, index + 1));
-
-      index++;
-
-      if (index >= text.length) {
-        clearInterval(interval);
-      }
-    }, 30);
-  };
-
-  const startThinkingAnimation = () => {
-    const texts = [
-      "🤖 AI is thinking...",
-      "🤖 Scanning target...",
-      "🧠 Analyzing weaknesses...",
-      "🧠 Finding best roast...",
-      "🔥 Loading emotional damage...",
-      "💀 Roast locked and loaded...",
-      "😂 Launching attack..."
-    ];
-
-    setThinkingText(texts[0]);
-
-    let index = 0;
-
-    const interval = setInterval(() => {
-      setThinkingText(texts[index]);
-
-      index = (index + 1) % texts.length;
-    }, 1000);
-
-    return interval;
   };
 
   const downloadRoastCard = async () => {
     if (!cardRef.current) return;
 
     try {
-      const dataUrl = await toPng(cardRef.current);
+      // html-to-image যেন ইমেজ প্রসেস করতে একটু সময় পায়, তাই cacheBust ব্যবহার করা ভালো
+      const dataUrl = await toPng(cardRef.current, {
+        cacheBust: true,
+        style: { transform: 'scale(1)' } // অনেক সময় জুম ইন থাকলে ইমেজ কেটে যায়, এটা ফিক্স করবে
+      });
 
       const link = document.createElement("a");
-
-      link.download = "laugh-roast-card.png";
+      link.download = `${name || "laugh"}-roast-card.png`;
       link.href = dataUrl;
-
       link.click();
     } catch (err) {
-      console.log(err);
+      console.error("Card generation failed:", err);
+      alert("Failed to generate image card. Try copying text!");
     }
   };
 
@@ -141,11 +91,9 @@ export default function App() {
             onChange={(e) => setName(e.target.value)}
           />
 
-          
-        <button  onClick={generateRoast} disabled={loading}>
+          <button onClick={generateRoast} disabled={loading}>
             {loading ? "Roasting 🔥..." : "Roast Him 😂"}
           </button>
-
         </div>
 
         <div className="theme-switch">
@@ -160,70 +108,60 @@ export default function App() {
           </div>
         )}
 
-        <div ref={cardRef} className={`roast-card ${theme}`}>
+        {/* কার্ডের কন্টেন্ট (টেক্সট ও ছবি) থাকলে তবেই কার্ডটি সুন্দর দেখাবে */}
+        {(displayText || cardImage) && (
+          <div ref={cardRef} className={`roast-card ${theme}`}>
+            <div className="roast-title">🔥 LaughRoast</div>
+            <div className="roast-name">{name}</div>
 
-          <div className="roast-title">
-            🔥 LaughRoast
+            {/* inline style দিয়ে whiteSpace হ্যান্ডেল করা হলো যেন \n কাজ করে */}
+            <div className="roast-text" style={{ whiteSpace: "pre-line" }}>
+              {displayText}
+            </div>
+
+            {cardImage && (
+              <img
+                src={cardImage}
+                alt="Roast Meme"
+                className="card-img"
+                crossOrigin="anonymous" // ইমেজ রেন্ডারিং বাগ ফিক্স করার জন্য
+                style={{ aspectRatio: "4 / 3", width: "100%", borderRadius: "8px", marginTop: "15px" }}
+              />
+            )}
+
+            <div className="roast-footer">laugh-roast.vercel.app</div>
           </div>
-
-          <div className="roast-name">
-            {name}
-          </div>
-
-          <div className="roast-text">
-            {displayText}
-          </div>
-
-          {cardImage && (
-            <img src={cardImage} className="card-img" />
-          )}
-
-          <div className="roast-footer">
-            laugh-roast.vercel.app
-          </div>
-
-        </div>
-
-        {roasts.length > 0 && (
-          <button className="share-btn" onClick={shareToWhatsApp}>
-            📱 Share to WhatsApp
-          </button>
-
-        )}
-        {roasts.length > 0 && (
-          <button
-            className="share-btn"
-            onClick={() => navigator.clipboard.writeText(roasts.join("\n"))}
-          >
-            📋 Copy Roast
-          </button>
         )}
 
         {roasts.length > 0 && (
-          <button
-            className="share-btn"
-            onClick={downloadRoastCard}
-          >
-            🖼️ Share Card
-          </button>
+          <div className="action-buttons" style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "20px" }}>
+            <button className="share-btn" onClick={shareToWhatsApp}>
+              📱 Share to WhatsApp
+            </button>
+
+            <button
+              className="share-btn"
+              onClick={() => {
+                navigator.clipboard.writeText(roasts.join("\n"));
+                alert("Roast text copied! 📋");
+              }}
+            >
+              📋 Copy Roast
+            </button>
+
+            <button className="share-btn" onClick={downloadRoastCard}>
+              🖼️ Download Card
+            </button>
+          </div>
         )}
-
-
       </div>
 
       <footer className="app-footer">
         <p>Developed by <strong>Debajit Roy</strong></p>
         <p>
-          <a href="mailto:debajitroy544@gmail.com">
-            📧 debajitroy544@gmail.com
-          </a> | 📱 +8801783388518
+          <a href="mailto:debajitroy544@gmail.com">📧 debajitroy544@gmail.com</a> | 📱 +8801783388518
         </p>
       </footer>
-
-    </div >
-
-
-
+    </div>
   );
-
 }
