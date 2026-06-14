@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { toPng } from "html-to-image";
 import axios from "axios";
 import "./style.css";
-import { memeImages } from "./data/memeImages";
+
 
 export default function App() {
   const [name, setName] = useState<string>("");
@@ -35,8 +35,9 @@ export default function App() {
         setRoasts(res.data.roast);
         setDisplayText(res.data.roast.join("\n\n")); // সহজে পড়ার জন্য ডাবল নিউলাইন
       }
-      const randomIndex = Math.floor(Math.random() * memeImages.length);
-      setCardImage(memeImages[randomIndex]);
+      if (res.data?.image) {
+        setCardImage(res.data.image);
+      }
     } catch (err) {
       console.error(err);
       setDisplayText("Server shock খেয়েছে! আবার ট্রাই করুন। 😭");
