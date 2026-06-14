@@ -1,8 +1,6 @@
 export const memeImages: string[] = [
  
 
-  "https://i.imgflip.com/30b1gx.jpg", // change my mind
-
   "https://i.imgflip.com/26am.jpg",   // surprised pikachu
 
   "https://i.imgflip.com/4t0m5.jpg",  // crying cat
